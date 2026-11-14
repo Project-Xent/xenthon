@@ -1,0 +1,17 @@
+[project]
+name = "xenthon"
+version = "0.3.2"
+description = "Declarative Python bindings for the Xent native UI toolkit"
+requires-python = ">=3.12"
+license = "0BSD"
+license-files = ["LICENSE"]
+keywords = ["gui", "ui", "windows", "winui", "fluent"]
+classifiers = [
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Cython",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: User Interfaces",
+]
+
+[project.urls]
+Repository = "https://github.com/Project-Xent/xenthon"
