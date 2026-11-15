@@ -225,3 +225,7 @@ cdef extern from "fluxent/flux_app.h" nogil:
 cdef extern from "fluxent/flux_host.h" nogil:
     XtkHost *flux_app_attachhost(FluxApp *app)
     void flux_host_destroy(XtkHost *host)
+
+
+cdef extern from "fluxent/flux_controls.h" nogil:
+    void flux_controls_all()

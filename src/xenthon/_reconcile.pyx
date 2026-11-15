@@ -524,6 +524,7 @@ def run(model, update, view, *, title="xenthon", width=960, height=640, theme=Th
     cfg.height = height
     cfg.theme = int(theme)
     cfg.backdrop = FLUX_BACKDROP_MICA
+    flux_controls_all()
     rt.flux = flux_app_create(&cfg)
     PyMem_Free(wide)
     if rt.flux == NULL:
