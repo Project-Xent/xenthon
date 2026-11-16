@@ -23,6 +23,13 @@ cdef extern from "xtk/xtk.h":
         XTK_PROP_FIT_WIDTH
         XTK_PROP_FIT_HEIGHT
         XTK_PROP_WRAP
+        XTK_PROP_DROP_OPERATION
+        XTK_PROP_DRAG_TEXT
+        XTK_PROP_DRAG_FILES
+        XTK_EVENT_DRAG_HOVER
+        XTK_EVENT_DROP_FILES
+        XTK_EVENT_DROP_TEXT
+        XTK_EVENT_DRAG_COMPLETED
         XTK_CTRL_TEXT
         XTK_PROP_TEXT
         XTK_PROP_FONT_SIZE
@@ -281,6 +288,10 @@ cdef extern from "xtk/xtk.h":
         XTK_CLOCK_SYSTEM
         XTK_CLOCK_12H
         XTK_CLOCK_24H
+        XTK_DROP_NONE
+        XTK_DROP_COPY
+        XTK_DROP_MOVE
+        XTK_DROP_LINK
         XTK_ELEMENT_LABEL_DEFAULT
         XTK_ELEMENT_LABEL_COLLAPSED
         XTK_FONT_THIN

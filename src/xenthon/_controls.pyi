@@ -61,6 +61,13 @@ class Clock(IntEnum):
     H24: int
 
 
+class DropOperation(IntEnum):
+    NONE: int
+    COPY: int
+    MOVE: int
+    LINK: int
+
+
 class ElementLabel(IntEnum):
     DEFAULT: int
     COLLAPSED: int
@@ -255,6 +262,13 @@ def container(
     fitw: bool | None = None,
     fith: bool | None = None,
     wrap: FlexWrap | None = None,
+    drop: DropOperation | None = None,
+    dragtext: str | None = None,
+    dragfiles: str | None = None,
+    on_draghover: Msg | Callable[[bool], Msg] | None = None,
+    on_dropfiles: Msg | Callable[[str], Msg] | None = None,
+    on_droptext: Msg | Callable[[str], Msg] | None = None,
+    on_dragcompleted: Msg | Callable[[int], Msg] | None = None,
 ) -> El: ...
 
 
@@ -573,6 +587,13 @@ def card(
     fitw: bool | None = None,
     fith: bool | None = None,
     wrap: FlexWrap | None = None,
+    drop: DropOperation | None = None,
+    dragtext: str | None = None,
+    dragfiles: str | None = None,
+    on_draghover: Msg | Callable[[bool], Msg] | None = None,
+    on_dropfiles: Msg | Callable[[str], Msg] | None = None,
+    on_droptext: Msg | Callable[[str], Msg] | None = None,
+    on_dragcompleted: Msg | Callable[[int], Msg] | None = None,
 ) -> El: ...
 
 
@@ -909,6 +930,13 @@ def expbody(
     fitw: bool | None = None,
     fith: bool | None = None,
     wrap: FlexWrap | None = None,
+    drop: DropOperation | None = None,
+    dragtext: str | None = None,
+    dragfiles: str | None = None,
+    on_draghover: Msg | Callable[[bool], Msg] | None = None,
+    on_dropfiles: Msg | Callable[[str], Msg] | None = None,
+    on_droptext: Msg | Callable[[str], Msg] | None = None,
+    on_dragcompleted: Msg | Callable[[int], Msg] | None = None,
 ) -> El: ...
 
 
@@ -981,6 +1009,13 @@ def dialogbody(
     fitw: bool | None = None,
     fith: bool | None = None,
     wrap: FlexWrap | None = None,
+    drop: DropOperation | None = None,
+    dragtext: str | None = None,
+    dragfiles: str | None = None,
+    on_draghover: Msg | Callable[[bool], Msg] | None = None,
+    on_dropfiles: Msg | Callable[[str], Msg] | None = None,
+    on_droptext: Msg | Callable[[str], Msg] | None = None,
+    on_dragcompleted: Msg | Callable[[int], Msg] | None = None,
 ) -> El: ...
 
 
@@ -1633,6 +1668,13 @@ def splitpane(
     fitw: bool | None = None,
     fith: bool | None = None,
     wrap: FlexWrap | None = None,
+    drop: DropOperation | None = None,
+    dragtext: str | None = None,
+    dragfiles: str | None = None,
+    on_draghover: Msg | Callable[[bool], Msg] | None = None,
+    on_dropfiles: Msg | Callable[[str], Msg] | None = None,
+    on_droptext: Msg | Callable[[str], Msg] | None = None,
+    on_dragcompleted: Msg | Callable[[int], Msg] | None = None,
 ) -> El: ...
 
 
@@ -1661,6 +1703,13 @@ def splitbody(
     fitw: bool | None = None,
     fith: bool | None = None,
     wrap: FlexWrap | None = None,
+    drop: DropOperation | None = None,
+    dragtext: str | None = None,
+    dragfiles: str | None = None,
+    on_draghover: Msg | Callable[[bool], Msg] | None = None,
+    on_dropfiles: Msg | Callable[[str], Msg] | None = None,
+    on_droptext: Msg | Callable[[str], Msg] | None = None,
+    on_dragcompleted: Msg | Callable[[int], Msg] | None = None,
 ) -> El: ...
 
 
