@@ -74,6 +74,7 @@ class ElementLabel(IntEnum):
 
 
 class FontWeight(IntEnum):
+    INHERIT: int
     THIN: int
     EXTRA_LIGHT: int
     LIGHT: int
@@ -492,6 +493,12 @@ def image(
     tip: str | None = None,
     src: int | None = None,
     fit: ImageStretch | None = None,
+    nl: float | None = None,
+    nt: float | None = None,
+    nr: float | None = None,
+    nb: float | None = None,
+    on_opened: Msg | None = None,
+    on_failed: Msg | None = None,
 ) -> El: ...
 
 
@@ -540,6 +547,7 @@ def list(
     ncol: int | None = None,
     mode: ListSelMode | None = None,
     first: int | None = None,
+    rectsel: bool | None = None,
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
     items: tuple[int, Callable[[int], El]] | None = None,
@@ -1179,6 +1187,7 @@ def listbox(
     ncol: int | None = None,
     mode: ListSelMode | None = None,
     first: int | None = None,
+    rectsel: bool | None = None,
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
     items: tuple[int, Callable[[int], El]] | None = None,
@@ -1205,6 +1214,7 @@ def gridview(
     ncol: int | None = None,
     mode: ListSelMode | None = None,
     first: int | None = None,
+    rectsel: bool | None = None,
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
     items: tuple[int, Callable[[int], El]] | None = None,
@@ -1231,6 +1241,7 @@ def repeater(
     ncol: int | None = None,
     mode: ListSelMode | None = None,
     first: int | None = None,
+    rectsel: bool | None = None,
     items: tuple[int, Callable[[int], El]] | None = None,
 ) -> El: ...
 
@@ -1990,4 +2001,20 @@ def appbarsep(
     tip: str | None = None,
     secondary: bool | None = None,
     order: int | None = None,
+) -> El: ...
+
+
+def groupheader(
+    *children: El,
+    key: int | str | None = None,
+    w: float | None = None,
+    h: float | None = None,
+    grow: float | None = None,
+    shrink: float | None = None,
+    self: FlexAlign | None = None,
+    ml: float | None = None,
+    mt: float | None = None,
+    mr: float | None = None,
+    mb: float | None = None,
+    tip: str | None = None,
 ) -> El: ...
