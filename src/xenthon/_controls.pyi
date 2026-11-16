@@ -30,6 +30,12 @@ class FlexWrap(IntEnum):
     WRAP: int
 
 
+class AppBarMode(IntEnum):
+    COMPACT: int
+    MINIMAL: int
+    HIDDEN: int
+
+
 class BadgeMode(IntEnum):
     DOT: int
     NUMBER: int
@@ -53,6 +59,11 @@ class Clock(IntEnum):
     SYSTEM: int
     H12: int
     H24: int
+
+
+class ElementLabel(IntEnum):
+    DEFAULT: int
+    COLLAPSED: int
 
 
 class FontWeight(IntEnum):
@@ -81,11 +92,23 @@ class InfoBarSeverity(IntEnum):
     ERROR: int
 
 
+class LabelPosition(IntEnum):
+    BOTTOM: int
+    RIGHT: int
+    COLLAPSED: int
+
+
 class ListSelMode(IntEnum):
     SINGLE: int
     NONE: int
     MULTIPLE: int
     EXTENDED: int
+
+
+class OverflowButton(IntEnum):
+    AUTO: int
+    VISIBLE: int
+    COLLAPSED: int
 
 
 class PagerButtonVis(IntEnum):
@@ -129,6 +152,12 @@ class ScrollBarIndicator(IntEnum):
 class SliderSnap(IntEnum):
     STEP: int
     TICKS: int
+
+
+class SortDirection(IntEnum):
+    NONE: int
+    ASCENDING: int
+    DESCENDING: int
 
 
 class Spectrum(IntEnum):
@@ -190,6 +219,7 @@ class TextTrim(IntEnum):
     CHAR_ELLIPSIS: int
     WORD: int
     WORD_ELLIPSIS: int
+    PATH_ELLIPSIS: int
 
 
 class TickPlacement(IntEnum):
@@ -1789,4 +1819,126 @@ def colorpicker(
     morebutton: bool | None = None,
     spectrum: Spectrum | None = None,
     on_value: Msg | Callable[[int], Msg] | None = None,
+) -> El: ...
+
+
+def colheader(
+    *children: El,
+    key: int | str | None = None,
+    w: float | None = None,
+    h: float | None = None,
+    grow: float | None = None,
+    shrink: float | None = None,
+    self: FlexAlign | None = None,
+    ml: float | None = None,
+    mt: float | None = None,
+    mr: float | None = None,
+    mb: float | None = None,
+    tip: str | None = None,
+) -> El: ...
+
+
+def colitem(
+    *children: El,
+    key: int | str | None = None,
+    w: float | None = None,
+    minw: float | None = None,
+    maxw: float | None = None,
+    text: str | None = None,
+    tip: str | None = None,
+    align: TextAlign | None = None,
+    enabled: bool | None = None,
+    resizable: bool | None = None,
+    sort: SortDirection | None = None,
+    on_invoke: Msg | None = None,
+    on_resize: Msg | Callable[[float], Msg] | None = None,
+    on_fit: Msg | None = None,
+    on_reorder: Msg | Callable[[int], Msg] | None = None,
+) -> El: ...
+
+
+def commandbar(
+    *children: El,
+    key: int | str | None = None,
+    w: float | None = None,
+    h: float | None = None,
+    grow: float | None = None,
+    self: FlexAlign | None = None,
+    ml: float | None = None,
+    mt: float | None = None,
+    mr: float | None = None,
+    mb: float | None = None,
+    tip: str | None = None,
+    enabled: bool | None = None,
+    open: bool | None = None,
+    sticky: bool | None = None,
+    mode: AppBarMode | None = None,
+    labels: LabelPosition | None = None,
+    more: OverflowButton | None = None,
+    dynamic: bool | None = None,
+    on_open: Msg | Callable[[bool], Msg] | None = None,
+) -> El: ...
+
+
+def appbarbutton(
+    *children: El,
+    key: int | str | None = None,
+    w: float | None = None,
+    h: float | None = None,
+    grow: float | None = None,
+    self: FlexAlign | None = None,
+    ml: float | None = None,
+    mt: float | None = None,
+    mr: float | None = None,
+    mb: float | None = None,
+    tip: str | None = None,
+    text: str | None = None,
+    icon: str | None = None,
+    enabled: bool | None = None,
+    labelpos: ElementLabel | None = None,
+    accel: str | None = None,
+    secondary: bool | None = None,
+    order: int | None = None,
+    on_invoke: Msg | None = None,
+) -> El: ...
+
+
+def appbartoggle(
+    *children: El,
+    key: int | str | None = None,
+    w: float | None = None,
+    h: float | None = None,
+    grow: float | None = None,
+    self: FlexAlign | None = None,
+    ml: float | None = None,
+    mt: float | None = None,
+    mr: float | None = None,
+    mb: float | None = None,
+    tip: str | None = None,
+    text: str | None = None,
+    icon: str | None = None,
+    enabled: bool | None = None,
+    labelpos: ElementLabel | None = None,
+    accel: str | None = None,
+    checked: bool | None = None,
+    secondary: bool | None = None,
+    order: int | None = None,
+    on_change: Msg | Callable[[bool], Msg] | None = None,
+) -> El: ...
+
+
+def appbarsep(
+    *children: El,
+    key: int | str | None = None,
+    w: float | None = None,
+    h: float | None = None,
+    grow: float | None = None,
+    self: FlexAlign | None = None,
+    ml: float | None = None,
+    mt: float | None = None,
+    mr: float | None = None,
+    mb: float | None = None,
+    tip: str | None = None,
+    secondary: bool | None = None,
+    order: int | None = None,
 ) -> El: ...
