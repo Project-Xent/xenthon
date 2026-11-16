@@ -1,5 +1,5 @@
 set_project("xenthon")
-set_version("0.3.2")
+set_version("0.3.3")
 set_languages("c17")
 set_allowedplats("mingw")
 
