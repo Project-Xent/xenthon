@@ -220,6 +220,8 @@ cdef extern from "fluxent/flux_app.h" nogil:
     int flux_app_run(FluxApp *app)
     void flux_app_redraw(FluxApp *app)
     void flux_app_onframe(FluxApp *app, void (*cb)(void *ctx) noexcept, void *ctx)
+    bint flux_app_invoke(FluxApp *app, void (*fn)(void *ctx) noexcept nogil, void *ctx)
+    bint flux_app_setfocus(FluxApp *app, XtkCtrl control)
 
 
 cdef extern from "fluxent/flux_host.h" nogil:
