@@ -434,11 +434,14 @@ cdef class Recon:
                 self.update(node, new[i])
                 if oi < min_after:
                     min_after = oi
-                else:
+                elif node.ty != XTK_CTRL_DIALOG:
                     xtk_txn_move(self.txn, parent, node.target(), next_ref)
             else:
                 node = self.create(new[i], parent, next_ref)
-            next_ref = node.target()
+            # A closed dialog is parked outside its parent by the host, so it can't anchor an
+            # insert or move. Dialogs render on the overlay, so their place among siblings doesn't matter.
+            if node.ty != XTK_CTRL_DIALOG:
+                next_ref = node.target()
             out[i] = node
         for j, n in enumerate(old):
             if not taken[j]:
