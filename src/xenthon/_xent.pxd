@@ -32,10 +32,6 @@ cdef extern from "xtk/xtk_scene.h" nogil:
         char *data
         uint32_t len
 
-    ctypedef struct XtkValueBytes:
-        uint8_t *data
-        uint32_t len
-
     ctypedef union XtkValueU:
         bint b
         int32_t i32
@@ -45,7 +41,6 @@ cdef extern from "xtk/xtk_scene.h" nogil:
         XtkColor color
         XtkValueString string
         XtkResource resource
-        XtkValueBytes bytes
 
     ctypedef struct XtkValue:
         int kind
@@ -163,7 +158,6 @@ cdef extern from "xtk/xtk_scene.h" nogil:
         XTK_VALUE_COLOR
         XTK_VALUE_STRING
         XTK_VALUE_RESOURCE
-        XTK_VALUE_BYTES
         XTK_EVENT_PHASE_MASK_TARGET
         XTK_EVENT_CONTINUE
         XTK_EVENT_HANDLED
@@ -195,6 +189,32 @@ cdef extern from "xtk/xtk_scene.h" nogil:
     XtkSubRef xtk_txn_on(XtkTxn *txn, XtkNodeRef target, XtkEventId event, uint32_t phases, XtkEventFn fn, void *arg)
     bint xtk_txn_off(XtkTxn *txn, XtkSubId id)
     void xtk_batchresult_destroy(XtkBatchResult *result)
+
+    ctypedef struct XtkTabDesc:
+        const char *icon
+        const char *label
+
+    ctypedef struct XtkSelectorItem:
+        const char *text
+        const char *icon
+        bint disabled
+
+    ctypedef struct XtkNavItemDesc:
+        int kind
+        const char *icon
+        const char *label
+
+    ctypedef struct XtkNavDesc:
+        const XtkNavItemDesc *items
+        int nitem
+        int sel
+        bint window_title_bar
+        const char *app_title
+
+    bint xtk_txn_setitems(XtkTxn *txn, XtkNodeRef target, const char *const *items, int count)
+    bint xtk_txn_setselitems(XtkTxn *txn, XtkNodeRef target, const XtkSelectorItem *items, int count)
+    bint xtk_txn_settabs(XtkTxn *txn, XtkNodeRef target, const XtkTabDesc *tabs, int count)
+    bint xtk_txn_setnav(XtkTxn *txn, XtkNodeRef target, const XtkNavDesc *nav)
 
 
 cdef extern from "xtk/xtk_catalog.h" nogil:

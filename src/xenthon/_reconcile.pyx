@@ -1,7 +1,6 @@
 # cython: language_level=3, boundscheck=False, wraparound=False
 
 import math
-import struct
 import traceback
 from enum import IntEnum
 
@@ -25,7 +24,6 @@ K_ENUM = 5
 K_COLOR = 6
 K_STRING = 7
 K_RESOURCE = 8
-K_BYTES = 9
 
 P_NONE = XTK_EVENT_PAYLOAD_NONE
 P_BOOL = XTK_EVENT_PAYLOAD_BOOL
@@ -48,87 +46,6 @@ class Theme(IntEnum):
     DARK = FLUX_THEME_DARK
 
 
-class NavKind(IntEnum):
-    ITEM = 0
-    HEADER = 1
-    SEPARATOR = 2
-    FOOTER = 3
-    CHILD = 4
-
-
-def _zstrings(fields):
-    return b"".join(("" if f is None else str(f)).encode("utf-8") + b"\0" for f in fields)
-
-
-def _strings_model(items):
-    return _zstrings(items)
-
-
-def _tabs_model(items):
-    fields = []
-    for it in items:
-        icon, label = (None, it) if isinstance(it, str) else it
-        fields += [icon, label]
-    return _zstrings(fields)
-
-
-def _selector_model(items):
-    fields = []
-    for it in items:
-        if isinstance(it, str):
-            it = (None, it)
-        icon, label = it[0], it[1]
-        fields += [icon, label, "1" if len(it) > 2 and it[2] else "0"]
-    return _zstrings(fields)
-
-
-# layout of xtk_navmodel_write (xent-kit/src/xtk_navmodel.c)
-def _nav_model(items, titlebar, title):
-    rows = []
-    blobs = []
-    parent = -1
-    for i, it in enumerate(items):
-        if not isinstance(it, tuple):
-            it = (it, None, None)
-        kind = NavKind(it[0])
-        if kind == NavKind.ITEM:
-            parent = i
-        elif kind == NavKind.CHILD and parent < 0:
-            raise ValueError("NavKind.CHILD needs a NavKind.ITEM before it")
-        rows.append((int(kind), parent if kind == NavKind.CHILD else 0xFFFFFFFF, it[1], it[2]))
-    floor = 32 + 28 * len(rows)
-    cursor = [floor]
-
-    def put(text):
-        if text is None:
-            return 0, 0
-        raw = str(text).encode("utf-8")
-        at = cursor[0]
-        blobs.append(raw + b"\0")
-        cursor[0] += len(raw) + 1
-        return at, len(raw)
-
-    t_off, t_len = put(title)
-    wire = []
-    for kind, par, icon, label in rows:
-        i_off, i_len = put(icon)
-        l_off, l_len = put(label)
-        wire.append(struct.pack("<7I", kind, par, i_off, i_len, l_off, l_len, 0))
-    size = cursor[0]
-    head = struct.pack("<8I", 0x56414E58, 1, size, len(rows), 1 if titlebar else 0, t_off, t_len, 0)
-    return head + b"".join(wire) + b"".join(blobs)
-
-
-_MODELS = {
-    XTK_CTRL_COMBO: _strings_model,
-    XTK_CTRL_SUGGEST: _strings_model,
-    XTK_CTRL_BREADCRUMB: _strings_model,
-    XTK_CTRL_LOOPING: _strings_model,
-    XTK_CTRL_TABS: _tabs_model,
-    XTK_CTRL_SELECTOR: _selector_model,
-}
-
-
 class ScrollPos:
     __slots__ = ("x", "y", "max_x", "max_y")
 
@@ -148,12 +65,14 @@ cdef class Spec:
     cdef readonly dict props
     cdef readonly dict events
     cdef readonly bint virtual
+    cdef readonly object model
 
-    def __init__(self, ty, props, events, virtual):
+    def __init__(self, ty, props, events, virtual, model):
         self.ty = ty
         self.props = props
         self.events = events
         self.virtual = virtual
+        self.model = model
 
 
 cdef class El:
@@ -164,6 +83,7 @@ cdef class El:
     cdef public list kids
     cdef public object items
     cdef public object focus
+    cdef public object model
 
 
 def el(Spec spec, tuple children, dict kw):
@@ -175,11 +95,12 @@ def el(Spec spec, tuple children, dict kw):
     e.kids = [kid for kid in children if kid is not None]
     e.items = None
     e.focus = None
-    if spec.ty == XTK_CTRL_NAV:
+    e.model = None
+    if spec.model == "nav":
         kw = dict(kw)
         nav = (kw.pop("items", None), kw.pop("titlebar", None), kw.pop("title", None))
         if nav != (None, None, None):
-            e.props.append((XTK_PROP_NAV_MODEL, K_BYTES, _nav_model(nav[0] or (), bool(nav[1]), nav[2])))
+            e.model = ("nav", (tuple(nav[0] or ()), bool(nav[1]), nav[2]))
     for name, value in kw.items():
         if value is None:
             continue
@@ -191,8 +112,8 @@ def el(Spec spec, tuple children, dict kw):
             count, item = value
             e.items = (count, item)
             e.props.append((XTK_PROP_ITEM_COUNT, K_I32, min(int(count), 2147483647)))
-        elif name == "items" and spec.ty in _MODELS:
-            e.props.append((XTK_PROP_ITEMS, K_BYTES, _MODELS[spec.ty](value)))
+        elif name == "items" and spec.model in ("strings", "tabs", "selector"):
+            e.model = (spec.model, tuple(value))
         elif name in spec.props:
             pid, kind = spec.props[name]
             e.props.append((pid, kind, int(value) if kind == K_ENUM else value))
@@ -249,12 +170,6 @@ cdef XtkValue c_value(int kind, object v, list keep) except *:
     elif kind == K_RESOURCE:
         out.kind = XTK_VALUE_RESOURCE
         out.u.resource = int(v)
-    elif kind == K_BYTES:
-        raw = bytes(v)
-        keep.append(raw)
-        out.kind = XTK_VALUE_BYTES
-        out.u.bytes.data = <uint8_t *><char *>raw
-        out.u.bytes.len = len(raw)
     else:
         raw = str(v).encode("utf-8")
         keep.append(raw)
@@ -271,8 +186,6 @@ cdef object reset_value(int kind, uint32_t pid):
         return pid == XTK_PROP_ENABLED
     if kind == K_STRING:
         return ""
-    if kind == K_BYTES:
-        return b""
     return 0
 
 
@@ -331,6 +244,7 @@ cdef class Node:
     cdef XtkChangeStamp echo
     cdef uint32_t user_events
     cdef object focus
+    cdef object model
 
     cdef XtkNodeRef target(self):
         return local_ref(<XtkLocalId>self.local) if self.local >= 0 else existing(self.ctrl)
@@ -368,6 +282,104 @@ cdef void frame_cb(void *ctx) noexcept with gil:
         traceback.print_exc()
 
 
+cdef const char *cstr(object s, list keep) except? NULL:
+    if s is None:
+        return NULL
+    raw = str(s).encode("utf-8")
+    keep.append(raw)
+    return <const char *>raw
+
+
+cdef bint set_strings(XtkTxn *txn, XtkNodeRef target, tuple items) except *:
+    cdef list keep = []
+    cdef int n = len(items)
+    cdef const char **arr = <const char **>PyMem_Malloc(max(n, 1) * sizeof(char *))
+    if arr == NULL:
+        raise MemoryError()
+    try:
+        for i, it in enumerate(items):
+            arr[i] = cstr(it, keep)
+        return xtk_txn_setitems(txn, target, arr, n)
+    finally:
+        PyMem_Free(arr)
+
+
+cdef bint set_tabs(XtkTxn *txn, XtkNodeRef target, tuple items) except *:
+    cdef list keep = []
+    cdef int n = len(items)
+    cdef XtkTabDesc *arr = <XtkTabDesc *>PyMem_Malloc(max(n, 1) * sizeof(XtkTabDesc))
+    if arr == NULL:
+        raise MemoryError()
+    try:
+        for i, it in enumerate(items):
+            icon, label = (None, it) if isinstance(it, str) else it
+            arr[i].icon = cstr(icon, keep)
+            arr[i].label = cstr(label, keep)
+        return xtk_txn_settabs(txn, target, arr, n)
+    finally:
+        PyMem_Free(arr)
+
+
+cdef bint set_selector(XtkTxn *txn, XtkNodeRef target, tuple items) except *:
+    cdef list keep = []
+    cdef int n = len(items)
+    cdef XtkSelectorItem *arr = <XtkSelectorItem *>PyMem_Malloc(max(n, 1) * sizeof(XtkSelectorItem))
+    if arr == NULL:
+        raise MemoryError()
+    try:
+        for i, it in enumerate(items):
+            it = (None, it) if isinstance(it, str) else it
+            arr[i].icon = cstr(it[0], keep)
+            arr[i].text = cstr(it[1], keep)
+            arr[i].disabled = len(it) > 2 and bool(it[2])
+        return xtk_txn_setselitems(txn, target, arr, n)
+    finally:
+        PyMem_Free(arr)
+
+
+cdef bint set_nav(XtkTxn *txn, XtkNodeRef target, tuple model) except *:
+    cdef list keep = []
+    items, titlebar, title = model
+    cdef int n = len(items)
+    cdef XtkNavDesc desc
+    cdef XtkNavItemDesc *arr = <XtkNavItemDesc *>PyMem_Malloc(max(n, 1) * sizeof(XtkNavItemDesc))
+    if arr == NULL:
+        raise MemoryError()
+    try:
+        for i, it in enumerate(items):
+            it = it if isinstance(it, tuple) else (it, None, None)
+            arr[i].kind = int(it[0])
+            arr[i].icon = cstr(it[1], keep)
+            arr[i].label = cstr(it[2], keep)
+        memset(&desc, 0, sizeof(desc))
+        desc.items = arr
+        desc.nitem = n
+        desc.window_title_bar = titlebar
+        desc.app_title = cstr(title, keep)
+        return xtk_txn_setnav(txn, target, &desc)
+    finally:
+        PyMem_Free(arr)
+
+
+cdef void set_model(XtkTxn *txn, XtkNodeRef target, object model) except *:
+    kind, value = model
+    if kind == "strings":
+        ok = set_strings(txn, target, value)
+    elif kind == "tabs":
+        ok = set_tabs(txn, target, value)
+    elif kind == "selector":
+        ok = set_selector(txn, target, value)
+    else:
+        ok = set_nav(txn, target, value)
+    if not ok:
+        raise ValueError(f"invalid {kind} items: {value!r}")
+
+
+cdef object empty_model(object model):
+    kind = model[0]
+    return (kind, ((), False, None) if kind == "nav" else ())
+
+
 cdef class Recon:
     cdef Runtime rt
     cdef XtkTxn *txn
@@ -403,6 +415,7 @@ cdef class Recon:
             row.kids = [item(i)]
             row.items = None
             row.focus = None
+            row.model = None
             e.kids.append(row)
 
     cdef void subscribe(self, Node node, uint32_t event) except *:
@@ -454,6 +467,9 @@ cdef class Recon:
         node.focus = e.focus
         if wants_focus(e.focus):
             self.focus = node
+        node.model = e.model
+        if e.model is not None:
+            set_model(self.txn, local_ref(local), e.model)
         self.subscribe_all(node, e)
         for kid in e.kids:
             node.kids.append(self.create(kid, local_ref(local), no_ref()))
@@ -506,6 +522,9 @@ cdef class Recon:
     cdef void update(self, Node node, El e) except *:
         self.realize(e, node.window)
         self.diff_props(node, e)
+        if not same(node.model, e.model):
+            set_model(self.txn, existing(node.ctrl), e.model if e.model is not None else empty_model(node.model))
+        node.model = e.model
         node.handlers = e.handlers
         self.diff_subs(node, e)
         node.props = list(e.props)

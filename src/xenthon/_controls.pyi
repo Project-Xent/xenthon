@@ -2,7 +2,7 @@ from collections.abc import Callable, Sequence
 from enum import IntEnum
 from typing import Any
 
-from ._reconcile import El, NavKind, ScrollPos
+from ._reconcile import El, ScrollPos
 
 Msg = Any
 
@@ -111,6 +111,14 @@ class ListSelMode(IntEnum):
     NONE: int
     MULTIPLE: int
     EXTENDED: int
+
+
+class NavKind(IntEnum):
+    ITEM: int
+    HEADER: int
+    SEPARATOR: int
+    FOOTER: int
+    CHILD: int
 
 
 class OverflowButton(IntEnum):
