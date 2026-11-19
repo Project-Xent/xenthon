@@ -32,6 +32,10 @@ cdef extern from "xtk/xtk_scene.h" nogil:
         char *data
         uint32_t len
 
+    ctypedef struct XtkValueBytes:
+        uint8_t *data
+        uint32_t len
+
     ctypedef union XtkValueU:
         bint b
         int32_t i32
@@ -41,6 +45,7 @@ cdef extern from "xtk/xtk_scene.h" nogil:
         XtkColor color
         XtkValueString string
         XtkResource resource
+        XtkValueBytes bytes
 
     ctypedef struct XtkValue:
         int kind
@@ -158,6 +163,7 @@ cdef extern from "xtk/xtk_scene.h" nogil:
         XTK_VALUE_COLOR
         XTK_VALUE_STRING
         XTK_VALUE_RESOURCE
+        XTK_VALUE_BYTES
         XTK_EVENT_PHASE_MASK_TARGET
         XTK_EVENT_CONTINUE
         XTK_EVENT_HANDLED

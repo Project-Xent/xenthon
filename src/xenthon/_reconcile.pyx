@@ -1,6 +1,7 @@
 # cython: language_level=3, boundscheck=False, wraparound=False
 
 import math
+import struct
 import traceback
 from enum import IntEnum
 
@@ -24,6 +25,7 @@ K_ENUM = 5
 K_COLOR = 6
 K_STRING = 7
 K_RESOURCE = 8
+K_BYTES = 9
 
 P_NONE = XTK_EVENT_PAYLOAD_NONE
 P_BOOL = XTK_EVENT_PAYLOAD_BOOL
@@ -44,6 +46,87 @@ class Theme(IntEnum):
     SYSTEM = FLUX_THEME_SYSTEM
     LIGHT = FLUX_THEME_LIGHT
     DARK = FLUX_THEME_DARK
+
+
+class NavKind(IntEnum):
+    ITEM = 0
+    HEADER = 1
+    SEPARATOR = 2
+    FOOTER = 3
+    CHILD = 4
+
+
+def _zstrings(fields):
+    return b"".join(("" if f is None else str(f)).encode("utf-8") + b"\0" for f in fields)
+
+
+def _strings_model(items):
+    return _zstrings(items)
+
+
+def _tabs_model(items):
+    fields = []
+    for it in items:
+        icon, label = (None, it) if isinstance(it, str) else it
+        fields += [icon, label]
+    return _zstrings(fields)
+
+
+def _selector_model(items):
+    fields = []
+    for it in items:
+        if isinstance(it, str):
+            it = (None, it)
+        icon, label = it[0], it[1]
+        fields += [icon, label, "1" if len(it) > 2 and it[2] else "0"]
+    return _zstrings(fields)
+
+
+# layout of xtk_navmodel_write (xent-kit/src/xtk_navmodel.c)
+def _nav_model(items, titlebar, title):
+    rows = []
+    blobs = []
+    parent = -1
+    for i, it in enumerate(items):
+        if not isinstance(it, tuple):
+            it = (it, None, None)
+        kind = NavKind(it[0])
+        if kind == NavKind.ITEM:
+            parent = i
+        elif kind == NavKind.CHILD and parent < 0:
+            raise ValueError("NavKind.CHILD needs a NavKind.ITEM before it")
+        rows.append((int(kind), parent if kind == NavKind.CHILD else 0xFFFFFFFF, it[1], it[2]))
+    floor = 32 + 28 * len(rows)
+    cursor = [floor]
+
+    def put(text):
+        if text is None:
+            return 0, 0
+        raw = str(text).encode("utf-8")
+        at = cursor[0]
+        blobs.append(raw + b"\0")
+        cursor[0] += len(raw) + 1
+        return at, len(raw)
+
+    t_off, t_len = put(title)
+    wire = []
+    for kind, par, icon, label in rows:
+        i_off, i_len = put(icon)
+        l_off, l_len = put(label)
+        wire.append(struct.pack("<7I", kind, par, i_off, i_len, l_off, l_len, 0))
+    size = cursor[0]
+    head = struct.pack("<8I", 0x56414E58, 1, size, len(rows), 1 if titlebar else 0, t_off, t_len, 0)
+    return head + b"".join(wire) + b"".join(blobs)
+
+
+_MODELS = {
+    XTK_CTRL_COMBO: _strings_model,
+    XTK_CTRL_SUGGEST: _strings_model,
+    XTK_CTRL_BREADCRUMB: _strings_model,
+    XTK_CTRL_LOOPING: _strings_model,
+    XTK_CTRL_TABS: _tabs_model,
+    XTK_CTRL_SELECTOR: _selector_model,
+}
 
 
 class ScrollPos:
@@ -92,6 +175,11 @@ def el(Spec spec, tuple children, dict kw):
     e.kids = [kid for kid in children if kid is not None]
     e.items = None
     e.focus = None
+    if spec.ty == XTK_CTRL_NAV:
+        kw = dict(kw)
+        nav = (kw.pop("items", None), kw.pop("titlebar", None), kw.pop("title", None))
+        if nav != (None, None, None):
+            e.props.append((XTK_PROP_NAV_MODEL, K_BYTES, _nav_model(nav[0] or (), bool(nav[1]), nav[2])))
     for name, value in kw.items():
         if value is None:
             continue
@@ -103,6 +191,8 @@ def el(Spec spec, tuple children, dict kw):
             count, item = value
             e.items = (count, item)
             e.props.append((XTK_PROP_ITEM_COUNT, K_I32, min(int(count), 2147483647)))
+        elif name == "items" and spec.ty in _MODELS:
+            e.props.append((XTK_PROP_ITEMS, K_BYTES, _MODELS[spec.ty](value)))
         elif name in spec.props:
             pid, kind = spec.props[name]
             e.props.append((pid, kind, int(value) if kind == K_ENUM else value))
@@ -159,6 +249,12 @@ cdef XtkValue c_value(int kind, object v, list keep) except *:
     elif kind == K_RESOURCE:
         out.kind = XTK_VALUE_RESOURCE
         out.u.resource = int(v)
+    elif kind == K_BYTES:
+        raw = bytes(v)
+        keep.append(raw)
+        out.kind = XTK_VALUE_BYTES
+        out.u.bytes.data = <uint8_t *><char *>raw
+        out.u.bytes.len = len(raw)
     else:
         raw = str(v).encode("utf-8")
         keep.append(raw)
@@ -175,6 +271,8 @@ cdef object reset_value(int kind, uint32_t pid):
         return pid == XTK_PROP_ENABLED
     if kind == K_STRING:
         return ""
+    if kind == K_BYTES:
+        return b""
     return 0
 
 

@@ -398,4 +398,6 @@ cdef extern from "xtk/xtk.h":
         XTK_TICK_BOTTOM_RIGHT
         XTK_TICK_OUTSIDE
         XTK_TICK_NONE
+        XTK_PROP_ITEMS
+        XTK_PROP_NAV_MODEL
         XTK_EVENT_REALIZE
