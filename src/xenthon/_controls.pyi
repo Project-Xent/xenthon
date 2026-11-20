@@ -7,6 +7,12 @@ from ._reconcile import El, ScrollPos
 Msg = Any
 
 
+class Direction(IntEnum):
+    INHERIT: int
+    LTR: int
+    RTL: int
+
+
 class FlexAlign(IntEnum):
     AUTO: int
     START: int
@@ -275,6 +281,7 @@ def container(
     drop: DropOperation | None = None,
     dragtext: str | None = None,
     dragfiles: str | None = None,
+    flow: Direction | None = None,
     on_draghover: Msg | Callable[[bool], Msg] | None = None,
     on_dropfiles: Msg | Callable[[str], Msg] | None = None,
     on_droptext: Msg | Callable[[str], Msg] | None = None,
@@ -621,6 +628,7 @@ def card(
     drop: DropOperation | None = None,
     dragtext: str | None = None,
     dragfiles: str | None = None,
+    flow: Direction | None = None,
     on_draghover: Msg | Callable[[bool], Msg] | None = None,
     on_dropfiles: Msg | Callable[[str], Msg] | None = None,
     on_droptext: Msg | Callable[[str], Msg] | None = None,
@@ -982,6 +990,7 @@ def expbody(
     drop: DropOperation | None = None,
     dragtext: str | None = None,
     dragfiles: str | None = None,
+    flow: Direction | None = None,
     on_draghover: Msg | Callable[[bool], Msg] | None = None,
     on_dropfiles: Msg | Callable[[str], Msg] | None = None,
     on_droptext: Msg | Callable[[str], Msg] | None = None,
@@ -1064,6 +1073,7 @@ def dialogbody(
     drop: DropOperation | None = None,
     dragtext: str | None = None,
     dragfiles: str | None = None,
+    flow: Direction | None = None,
     on_draghover: Msg | Callable[[bool], Msg] | None = None,
     on_dropfiles: Msg | Callable[[str], Msg] | None = None,
     on_droptext: Msg | Callable[[str], Msg] | None = None,
@@ -1762,6 +1772,7 @@ def splitpane(
     drop: DropOperation | None = None,
     dragtext: str | None = None,
     dragfiles: str | None = None,
+    flow: Direction | None = None,
     on_draghover: Msg | Callable[[bool], Msg] | None = None,
     on_dropfiles: Msg | Callable[[str], Msg] | None = None,
     on_droptext: Msg | Callable[[str], Msg] | None = None,
@@ -1798,6 +1809,7 @@ def splitbody(
     drop: DropOperation | None = None,
     dragtext: str | None = None,
     dragfiles: str | None = None,
+    flow: Direction | None = None,
     on_draghover: Msg | Callable[[bool], Msg] | None = None,
     on_dropfiles: Msg | Callable[[str], Msg] | None = None,
     on_droptext: Msg | Callable[[str], Msg] | None = None,
