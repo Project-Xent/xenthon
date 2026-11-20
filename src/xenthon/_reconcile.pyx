@@ -470,6 +470,7 @@ cdef class Recon:
         node.model = e.model
         if e.model is not None:
             set_model(self.txn, local_ref(local), e.model)
+            self.reselect(local_ref(local), e)
         self.subscribe_all(node, e)
         for kid in e.kids:
             node.kids.append(self.create(kid, local_ref(local), no_ref()))
@@ -486,6 +487,18 @@ cdef class Recon:
                     ids.add(out[i])
         node.user_events = 0
         return ids
+
+    cdef void reselect(self, XtkNodeRef target, El e) except *:
+        # Loading items resets the selection, and a selection sent before the items exist is dropped.
+        # So send the selection again once the items are in.
+        cdef list keep = []
+        cdef XtkChangeStamp zero
+        zero.source = 0
+        zero.revision = 0
+        for pid, kind, value in e.props:
+            if pid == XTK_PROP_SELECTED_INDEX:
+                if not xtk_txn_set(self.txn, target, pid, c_value(kind, value, keep), zero):
+                    raise RuntimeError("set selection failed")
 
     cdef void set_prop(self, XtkCtrl ctrl, uint32_t pid, int kind, object value, XtkChangeStamp stamp) except *:
         cdef list keep = []
@@ -524,6 +537,7 @@ cdef class Recon:
         self.diff_props(node, e)
         if not same(node.model, e.model):
             set_model(self.txn, existing(node.ctrl), e.model if e.model is not None else empty_model(node.model))
+            self.reselect(existing(node.ctrl), e)
         node.model = e.model
         node.handlers = e.handlers
         self.diff_subs(node, e)
