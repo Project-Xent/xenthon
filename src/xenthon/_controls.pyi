@@ -241,6 +241,7 @@ class TickPlacement(IntEnum):
 def container(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -276,6 +277,7 @@ def container(
 def text(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -300,6 +302,7 @@ def text(
 def button(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -320,6 +323,7 @@ def button(
 def toggle(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -339,6 +343,7 @@ def toggle(
 def checkbox(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -361,6 +366,7 @@ def checkbox(
 def radio(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -380,6 +386,7 @@ def radio(
 def switch(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -399,6 +406,7 @@ def switch(
 def slider(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -430,6 +438,7 @@ def slider(
 def textbox(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -451,6 +460,7 @@ def textbox(
 def scroll(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -482,6 +492,7 @@ def scroll(
 def image(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -505,6 +516,7 @@ def image(
 def progress(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -530,6 +542,7 @@ def progress(
 def list(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -557,6 +570,7 @@ def list(
 def tab(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -573,6 +587,7 @@ def tab(
 def card(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -608,6 +623,7 @@ def card(
 def divider(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -624,6 +640,7 @@ def divider(
 def canvas(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -640,6 +657,7 @@ def canvas(
 def password(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -659,6 +677,7 @@ def password(
 def number(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -681,6 +700,7 @@ def number(
 def link(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -700,6 +720,7 @@ def link(
 def repeat(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -720,6 +741,7 @@ def repeat(
 def progressring(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -741,6 +763,7 @@ def progressring(
 def badge(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -760,6 +783,7 @@ def badge(
 def tooltip(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -778,6 +802,7 @@ def tooltip(
 def flyout(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -796,6 +821,7 @@ def flyout(
 def menufly(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -814,6 +840,7 @@ def menufly(
 def dropdown(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -834,6 +861,7 @@ def dropdown(
 def split(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -854,6 +882,7 @@ def split(
 def combo(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -877,6 +906,7 @@ def combo(
 def expander(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -896,6 +926,7 @@ def expander(
 def exphead(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -916,6 +947,7 @@ def exphead(
 def expbody(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -951,6 +983,7 @@ def expbody(
 def infobar(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -971,6 +1004,7 @@ def infobar(
 def dialog(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -995,6 +1029,7 @@ def dialog(
 def dialogbody(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1030,6 +1065,7 @@ def dialogbody(
 def menubar(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1046,6 +1082,7 @@ def menubar(
 def menuitem(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1067,6 +1104,7 @@ def menuitem(
 def nav(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1086,6 +1124,7 @@ def nav(
 def navitem(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1107,6 +1146,7 @@ def navitem(
 def tabs(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1128,6 +1168,7 @@ def tabs(
 def tabitem(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1149,6 +1190,7 @@ def tabitem(
 def listitem(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1170,6 +1212,7 @@ def listitem(
 def listbox(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1197,6 +1240,7 @@ def listbox(
 def gridview(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1224,6 +1268,7 @@ def gridview(
 def repeater(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1249,6 +1294,7 @@ def repeater(
 def itemsview(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1276,6 +1322,7 @@ def itemsview(
 def flip(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1295,6 +1342,7 @@ def flip(
 def pips(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1317,6 +1365,7 @@ def pips(
 def suggest(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1339,6 +1388,7 @@ def suggest(
 def togglesplit(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1359,6 +1409,7 @@ def togglesplit(
 def radiogroup(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1380,6 +1431,7 @@ def radiogroup(
 def rating(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1404,6 +1456,7 @@ def rating(
 def selector(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1424,6 +1477,7 @@ def selector(
 def selectoritem(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1445,6 +1499,7 @@ def selectoritem(
 def breadcrumb(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1465,6 +1520,7 @@ def breadcrumb(
 def crumb(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1486,6 +1542,7 @@ def crumb(
 def teachtip(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1516,6 +1573,7 @@ def teachtip(
 def tree(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1538,6 +1596,7 @@ def tree(
 def treeitem(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1560,6 +1619,7 @@ def treeitem(
 def refresh(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1580,6 +1640,7 @@ def refresh(
 def avatar(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1602,6 +1663,7 @@ def avatar(
 def pager(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1629,6 +1691,7 @@ def pager(
 def splitview(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1657,6 +1720,7 @@ def splitview(
 def splitpane(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1692,6 +1756,7 @@ def splitpane(
 def splitbody(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1727,6 +1792,7 @@ def splitbody(
 def titlebar(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1752,6 +1818,7 @@ def titlebar(
 def scrollbar(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1777,6 +1844,7 @@ def scrollbar(
 def looping(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1800,6 +1868,7 @@ def looping(
 def datepicker(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1821,6 +1890,7 @@ def datepicker(
 def timepicker(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1842,6 +1912,7 @@ def timepicker(
 def calendar(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1864,6 +1935,7 @@ def calendar(
 def colorpicker(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1885,6 +1957,7 @@ def colorpicker(
 def colheader(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1901,6 +1974,7 @@ def colheader(
 def colitem(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     minw: float | None = None,
     maxw: float | None = None,
@@ -1920,6 +1994,7 @@ def colitem(
 def commandbar(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1943,6 +2018,7 @@ def commandbar(
 def appbarbutton(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1966,6 +2042,7 @@ def appbarbutton(
 def appbartoggle(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -1990,6 +2067,7 @@ def appbartoggle(
 def appbarsep(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,
@@ -2007,6 +2085,7 @@ def appbarsep(
 def groupheader(
     *children: El,
     key: int | str | None = None,
+    focus: bool | int | str | None = None,
     w: float | None = None,
     h: float | None = None,
     grow: float | None = None,

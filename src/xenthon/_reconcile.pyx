@@ -80,6 +80,7 @@ cdef class El:
     cdef public dict handlers
     cdef public list kids
     cdef public object items
+    cdef public object focus
 
 
 def el(Spec spec, tuple children, dict kw):
@@ -90,11 +91,14 @@ def el(Spec spec, tuple children, dict kw):
     e.handlers = {}
     e.kids = [kid for kid in children if kid is not None]
     e.items = None
+    e.focus = None
     for name, value in kw.items():
         if value is None:
             continue
         if name == "key":
             e.key = value
+        elif name == "focus":
+            e.focus = value
         elif name == "items" and spec.virtual:
             count, item = value
             e.items = (count, item)
@@ -180,6 +184,10 @@ cdef bint same(object a, object b):
     return type(a) is type(b) and a == b
 
 
+cdef bint wants_focus(object token):
+    return token is not None and token is not False
+
+
 cdef str text(const char *data, uint32_t length):
     if data == NULL or length == 0:
         return ""
@@ -224,6 +232,7 @@ cdef class Node:
     cdef object window
     cdef XtkChangeStamp echo
     cdef uint32_t user_events
+    cdef object focus
 
     cdef XtkNodeRef target(self):
         return local_ref(<XtkLocalId>self.local) if self.local >= 0 else existing(self.ctrl)
@@ -265,6 +274,7 @@ cdef class Recon:
     cdef Runtime rt
     cdef XtkTxn *txn
     cdef list graveyard
+    cdef Node focus
 
     cdef void realize(self, El e, object window) except *:
         if e.items is None:
@@ -294,6 +304,7 @@ cdef class Recon:
             row.handlers = {}
             row.kids = [item(i)]
             row.items = None
+            row.focus = None
             e.kids.append(row)
 
     cdef void subscribe(self, Node node, uint32_t event) except *:
@@ -342,6 +353,9 @@ cdef class Recon:
         node.kids = []
         node.window = None
         node.user_events = 0
+        node.focus = e.focus
+        if wants_focus(e.focus):
+            self.focus = node
         self.subscribe_all(node, e)
         for kid in e.kids:
             node.kids.append(self.create(kid, local_ref(local), no_ref()))
@@ -398,6 +412,9 @@ cdef class Recon:
         self.diff_subs(node, e)
         node.props = list(e.props)
         node.key = e.key
+        if wants_focus(e.focus) and not same(node.focus, e.focus):
+            self.focus = node
+        node.focus = e.focus
         node.kids = self.reconcile_kids(node.kids, e.kids, existing(node.ctrl))
 
     cdef list match(self, list old, list new):
@@ -497,6 +514,7 @@ cdef class Runtime:
         recon.rt = self
         recon.txn = &txn
         recon.graveyard = []
+        recon.focus = None
         try:
             old = [self.tree] if self.tree is not None else []
             nodes = recon.reconcile_kids(old, [top], existing(self.root))
@@ -510,6 +528,28 @@ cdef class Runtime:
         resolve(<Node>nodes[0], result_ptr)
         xtk_batchresult_destroy(result_ptr)
         self.tree = nodes[0]
+        if recon.focus is not None:
+            flux_app_setfocus(self.flux, recon.focus.ctrl)
+
+
+cdef Runtime running = None
+
+
+cdef void wake_cb(void *ctx) noexcept nogil:
+    flux_app_redraw(<FluxApp *>ctx)
+
+
+def post(msg):
+    """Queue ``msg`` for ``update`` and wake the window thread. Safe to call from any thread.
+
+    Returns False when no app is running; the message is dropped then.
+    """
+    cdef Runtime rt = running
+    if rt is None or rt.flux == NULL:
+        return False
+    rt.queue.append(msg)
+    flux_app_invoke(rt.flux, wake_cb, <void *>rt.flux)
+    return True
 
 
 def run(model, update, view, *, title="xenthon", width=960, height=640, theme=Theme.SYSTEM):
@@ -543,8 +583,13 @@ def run(model, update, view, *, title="xenthon", width=960, height=640, theme=Th
     rt.root = xtk_scene_root(&rt.scene)
     flux_app_onframe(rt.flux, frame_cb, <void *>rt)
     flux_app_redraw(rt.flux)
-    with nogil:
-        code = flux_app_run(rt.flux)
+    global running
+    running = rt
+    try:
+        with nogil:
+            code = flux_app_run(rt.flux)
+    finally:
+        running = None
     flux_app_onframe(rt.flux, NULL, NULL)
     flux_host_destroy(host)
     flux_app_destroy(rt.flux)
