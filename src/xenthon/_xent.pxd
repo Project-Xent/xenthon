@@ -190,6 +190,32 @@ cdef extern from "xtk/xtk_scene.h" nogil:
     bint xtk_txn_off(XtkTxn *txn, XtkSubId id)
     void xtk_batchresult_destroy(XtkBatchResult *result)
 
+    ctypedef struct XtkTabDesc:
+        const char *icon
+        const char *label
+
+    ctypedef struct XtkSelectorItem:
+        const char *text
+        const char *icon
+        bint disabled
+
+    ctypedef struct XtkNavItemDesc:
+        int kind
+        const char *icon
+        const char *label
+
+    ctypedef struct XtkNavDesc:
+        const XtkNavItemDesc *items
+        int nitem
+        int sel
+        bint window_title_bar
+        const char *app_title
+
+    bint xtk_txn_setitems(XtkTxn *txn, XtkNodeRef target, const char *const *items, int count)
+    bint xtk_txn_setselitems(XtkTxn *txn, XtkNodeRef target, const XtkSelectorItem *items, int count)
+    bint xtk_txn_settabs(XtkTxn *txn, XtkNodeRef target, const XtkTabDesc *tabs, int count)
+    bint xtk_txn_setnav(XtkTxn *txn, XtkNodeRef target, const XtkNavDesc *nav)
+
 
 cdef extern from "xtk/xtk_catalog.h" nogil:
     uint32_t xtk_catalog_mirrors(XtkCtrlId control, XtkEventId event, XtkPropertyId *out)

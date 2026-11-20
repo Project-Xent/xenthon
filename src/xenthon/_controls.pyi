@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from enum import IntEnum
 from typing import Any
 
@@ -111,6 +111,14 @@ class ListSelMode(IntEnum):
     NONE: int
     MULTIPLE: int
     EXTENDED: int
+
+
+class NavKind(IntEnum):
+    ITEM: int
+    HEADER: int
+    SEPARATOR: int
+    FOOTER: int
+    CHILD: int
 
 
 class OverflowButton(IntEnum):
@@ -900,6 +908,7 @@ def combo(
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
     on_submit: Msg | Callable[[str], Msg] | None = None,
+    items: Sequence[str] | None = None,
 ) -> El: ...
 
 
@@ -1118,6 +1127,9 @@ def nav(
     sel: int | None = None,
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
+    items: Sequence[NavKind | tuple[NavKind, str | None, str | None]] | None = None,
+    titlebar: bool | None = None,
+    title: str | None = None,
 ) -> El: ...
 
 
@@ -1162,6 +1174,7 @@ def tabs(
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_close: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
+    items: Sequence[str | tuple[str | None, str]] | None = None,
 ) -> El: ...
 
 
@@ -1382,6 +1395,7 @@ def suggest(
     on_change: Msg | Callable[[str], Msg] | None = None,
     on_query: Msg | Callable[[str, int], Msg] | None = None,
     on_select: Msg | Callable[[int], Msg] | None = None,
+    items: Sequence[str] | None = None,
 ) -> El: ...
 
 
@@ -1471,6 +1485,7 @@ def selector(
     nitem: int | None = None,
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
+    items: Sequence[str | tuple[str | None, str] | tuple[str | None, str, bool]] | None = None,
 ) -> El: ...
 
 
@@ -1514,6 +1529,7 @@ def breadcrumb(
     nitem: int | None = None,
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
+    items: Sequence[str] | None = None,
 ) -> El: ...
 
 
@@ -1862,6 +1878,7 @@ def looping(
     loop: bool | None = None,
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
+    items: Sequence[str] | None = None,
 ) -> El: ...
 
 
