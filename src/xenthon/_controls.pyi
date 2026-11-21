@@ -579,6 +579,7 @@ def list(
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
     items: tuple[int, Callable[[int], El]] | None = None,
+    names: Sequence[str] | None = None,
 ) -> El: ...
 
 
@@ -1257,6 +1258,7 @@ def listbox(
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
     items: tuple[int, Callable[[int], El]] | None = None,
+    names: Sequence[str] | None = None,
 ) -> El: ...
 
 
@@ -1285,6 +1287,7 @@ def gridview(
     on_select: Msg | Callable[[int], Msg] | None = None,
     on_invoke: Msg | None = None,
     items: tuple[int, Callable[[int], El]] | None = None,
+    names: Sequence[str] | None = None,
 ) -> El: ...
 
 
