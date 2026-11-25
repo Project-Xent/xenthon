@@ -204,11 +204,14 @@ cdef extern from "xtk/xtk_scene.h" nogil:
         const char *icon
         const char *label
 
+    enum:
+        XTK_NAV_TITLE_BAR_TALL
+
     ctypedef struct XtkNavDesc:
         const XtkNavItemDesc *items
         int nitem
         int sel
-        bint window_title_bar
+        uint8_t window_title_bar
         const char *app_title
 
     bint xtk_txn_setitems(XtkTxn *txn, XtkNodeRef target, const char *const *items, int count)

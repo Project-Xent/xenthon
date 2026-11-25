@@ -114,6 +114,8 @@ def el(Spec spec, tuple children, dict kw):
             e.props.append((XTK_PROP_ITEM_COUNT, K_I32, min(int(count), 2147483647)))
         elif name == "items" and spec.model in ("strings", "tabs", "selector"):
             e.model = (spec.model, tuple(value))
+        elif name == "names" and spec.model == "names":
+            e.model = ("strings", tuple(value))
         elif name in spec.props:
             pid, kind = spec.props[name]
             e.props.append((pid, kind, int(value) if kind == K_ENUM else value))
@@ -354,7 +356,7 @@ cdef bint set_nav(XtkTxn *txn, XtkNodeRef target, tuple model) except *:
         memset(&desc, 0, sizeof(desc))
         desc.items = arr
         desc.nitem = n
-        desc.window_title_bar = titlebar
+        desc.window_title_bar = XTK_NAV_TITLE_BAR_TALL if titlebar == XTK_NAV_TITLE_BAR_TALL else bool(titlebar)
         desc.app_title = cstr(title, keep)
         return xtk_txn_setnav(txn, target, &desc)
     finally:
