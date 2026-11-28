@@ -600,6 +600,7 @@ cdef class Runtime:
     cdef object update_fn
     cdef object view_fn
     cdef public list queue
+    cdef public list calls
     cdef public bint dirty
     cdef FluxApp *flux
     cdef XtkScene scene
@@ -652,6 +653,12 @@ cdef class Runtime:
 
 
 cdef Runtime running = None
+cdef bint hot_reloading = False
+
+
+def _set_hot_reloading(flag):
+    global hot_reloading
+    hot_reloading = bool(flag)
 
 
 cdef void wake_cb(void *ctx) noexcept nogil:
@@ -671,7 +678,57 @@ def post(msg):
     return True
 
 
-def run(model, update, view, *, title="xenthon", width=960, height=640, theme=Theme.SYSTEM):
+cdef void call_cb(void *ctx) noexcept with gil:
+    cdef Runtime rt = running
+    if rt is None:
+        return
+    calls, rt.calls = rt.calls, []
+    for fn in calls:
+        try:
+            fn()
+        except BaseException:
+            traceback.print_exc()
+
+
+def invoke(fn):
+    """Run ``fn`` on the window thread. Safe to call from any thread.
+
+    Returns False when no app is running; ``fn`` is dropped then.
+    """
+    cdef Runtime rt = running
+    if rt is None or rt.flux == NULL:
+        return False
+    rt.calls.append(fn)
+    flux_app_invoke(rt.flux, call_cb, NULL)
+    return True
+
+
+def hot_swap(update, view):
+    """Window thread. Render with the new functions now; keep the old ones when that raises."""
+    cdef Runtime rt = running
+    if rt is None:
+        return False
+    old = (rt.update_fn, rt.view_fn)
+    pending, rt.queue = rt.queue, []
+    rt.update_fn, rt.view_fn = update, view
+    rt.dirty = True
+    ok = True
+    try:
+        rt.frame()
+    except BaseException:
+        traceback.print_exc()
+        rt.update_fn, rt.view_fn = old
+        rt.dirty = True
+        ok = False
+    rt.queue = pending + rt.queue
+    rt.wake()
+    return ok
+
+
+def run(model, update, view, *, title="xenthon", width=960, height=640, theme=Theme.SYSTEM, hot=False):
+    """With ``hot``, the module defining ``update`` and the ``.py`` files beside it are watched and reloaded."""
+    if hot_reloading:
+        return 0
     cdef Runtime rt = Runtime.__new__(Runtime)
     cdef FluxAppCfg cfg
     cdef XtkHost *host
@@ -696,19 +753,28 @@ def run(model, update, view, *, title="xenthon", width=960, height=640, theme=Th
     rt.update_fn = update
     rt.view_fn = view
     rt.queue = []
+    rt.calls = []
     rt.dirty = True
     rt.tree = None
     rt.scene = xtk_scene_fromhost(host)
     rt.root = xtk_scene_root(&rt.scene)
     flux_app_onframe(rt.flux, frame_cb, <void *>rt)
     flux_app_redraw(rt.flux)
+    session = None
+    if hot:
+        from xenthon._hot import Session
+        session = Session(update, view)
     global running
     running = rt
+    if session is not None:
+        session.start()
     try:
         with nogil:
             code = flux_app_run(rt.flux)
     finally:
         running = None
+        if session is not None:
+            session.stop()
     flux_app_onframe(rt.flux, NULL, NULL)
     flux_host_destroy(host)
     flux_app_destroy(rt.flux)
