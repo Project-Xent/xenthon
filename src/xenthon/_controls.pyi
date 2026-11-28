@@ -73,6 +73,12 @@ class Clock(IntEnum):
     H24: int
 
 
+class ConnectedKind(IntEnum):
+    GRAVITY: int
+    DIRECT: int
+    BASIC: int
+
+
 class DialogButton(IntEnum):
     NONE: int
     PRIMARY: int
@@ -193,6 +199,15 @@ class NavSlot(IntEnum):
     CONTENT_OVERLAY: int
 
 
+class NavTransitionKind(IntEnum):
+    ENTRANCE: int
+    SLIDE_RIGHT: int
+    SLIDE_LEFT: int
+    SLIDE_BOTTOM: int
+    DRILL_IN: int
+    SUPPRESS: int
+
+
 class OverflowButton(IntEnum):
     AUTO: int
     VISIBLE: int
@@ -308,6 +323,15 @@ class TextTrim(IntEnum):
     WORD: int
     WORD_ELLIPSIS: int
     PATH_ELLIPSIS: int
+
+
+class ThemeTransitionKind(IntEnum):
+    NONE: int
+    ENTRANCE: int
+    ADD_DELETE: int
+    CONTENT: int
+    REORDER: int
+    POPUP: int
 
 
 class TickPlacement(IntEnum):
@@ -431,6 +455,7 @@ def text(
     trim: TextTrim | None = None,
     textwrap: bool | None = None,
     selectable: bool | None = None,
+    fontfamily: str | None = None,
 ) -> El: ...
 
 
@@ -4352,4 +4377,68 @@ def navslot(
     shrink: float | None = None,
     self: FlexAlign | None = None,
     slot: NavSlot | None = None,
+) -> El: ...
+
+
+def frame(
+    *children: El,
+    key: int | str | None = None,
+    focus: bool | int | str | None = None,
+    w: float | None = None,
+    h: float | None = None,
+    grow: float | None = None,
+    shrink: float | None = None,
+    self: FlexAlign | None = None,
+    transition: NavTransitionKind | None = None,
+    is_back: bool | None = None,
+    page_key: int | None = None,
+) -> El: ...
+
+
+def fonticon(
+    *children: El,
+    key: int | str | None = None,
+    focus: bool | int | str | None = None,
+    w: float | None = None,
+    h: float | None = None,
+    grow: float | None = None,
+    self: FlexAlign | None = None,
+    ml: float | None = None,
+    mt: float | None = None,
+    mr: float | None = None,
+    mb: float | None = None,
+    tip: str | None = None,
+    aname: str | None = None,
+    aid: str | None = None,
+    ahelp: str | None = None,
+    adesc: str | None = None,
+    astatus: str | None = None,
+    aitem: str | None = None,
+    actype: str | None = None,
+    aaccel: str | None = None,
+    akey: str | None = None,
+    alandmark: Landmark | None = None,
+    alandname: str | None = None,
+    alive: LiveSetting | None = None,
+    aheading: HeadingLevel | None = None,
+    aview: AccessView | None = None,
+    arequired: bool | None = None,
+    avalid: bool | None = None,
+    aperipheral: bool | None = None,
+    adialog: bool | None = None,
+    apos: int | None = None,
+    asize: int | None = None,
+    alevel: int | None = None,
+    aculture: int | None = None,
+    alabel: str | None = None,
+    adescribed: str | None = None,
+    aflowsto: str | None = None,
+    aflowsfrom: str | None = None,
+    acontrols: str | None = None,
+    glyph: str | None = None,
+    fontfamily: str | None = None,
+    fontsize: float | None = None,
+    fontweight: FontWeight | None = None,
+    fg: int | None = None,
+    mirrorrtl: bool | None = None,
 ) -> El: ...
